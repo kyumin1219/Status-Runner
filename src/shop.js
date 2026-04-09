@@ -5,11 +5,11 @@ export const SHIELD_COST = 35
 
 /** @type {{ id: string, label: string, price: number }[]} */
 export const TITLE_CATALOG = [
-  { id: 'title-quit-god', label: '갓생 사는 퇴사자', price: 45 },
-  { id: 'title-legs', label: '하체 괴물', price: 40 },
-  { id: 'title-morning', label: '새벽 러너', price: 35 },
-  { id: 'title-stretch-king', label: '유연성 황제', price: 38 },
-  { id: 'title-casual', label: '일단 걷기부터', price: 30 },
+  { id: 'title-casual', label: '새싹처럼 걷기부터', price: 25 },
+  { id: 'title-quit-god', label: '갓생 사는 알파메일', price: 50 },
+  { id: 'title-legs', label: '루틴 괴물', price: 50 },
+  { id: 'title-morning', label: '또 달리는 러너', price: 50 },
+  { id: 'title-stretch-king', label: '고무고무 유연성', price: 50 },
 ]
 
 function randomSeed() {
