@@ -1,5 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import CoinShop from './CoinShop'
+
+const OVERLAY_MS = 300
 
 /**
  * @param {object} props
@@ -9,25 +11,55 @@ import CoinShop from './CoinShop'
  * @param {import('react').Dispatch<import('react').SetStateAction<object>>} props.setUserStatus
  */
 export default function ShopOverlay({ open, onClose, userStatus, setUserStatus }) {
+  const [mounted, setMounted] = useState(false)
+  const [animating, setAnimating] = useState(false)
+
   useEffect(() => {
-    if (!open) return
+    let raf1 = 0
+    let raf2 = 0
+    let closeTimer = 0
+
+    if (open) {
+      raf1 = requestAnimationFrame(() => {
+        setMounted(true)
+        raf2 = requestAnimationFrame(() => setAnimating(true))
+      })
+    } else {
+      raf1 = requestAnimationFrame(() => {
+        setAnimating(false)
+      })
+      closeTimer = window.setTimeout(() => setMounted(false), OVERLAY_MS)
+    }
+
+    return () => {
+      cancelAnimationFrame(raf1)
+      cancelAnimationFrame(raf2)
+      if (closeTimer) window.clearTimeout(closeTimer)
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (!mounted) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = prev
     }
-  }, [open])
+  }, [mounted])
 
   useEffect(() => {
-    if (!open) return
+    if (!mounted) return
     function onKey(e) {
       if (e.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [open, onClose])
+  }, [mounted, onClose])
 
-  if (!open) return null
+  if (!mounted) return null
+
+  const transition =
+    'motion-safe:transition-[transform,opacity] motion-safe:duration-300 motion-safe:ease-out'
 
   const chrome = (
     <div className="flex shrink-0 items-start justify-between gap-3 border-b border-violet-200/70 bg-violet-50/50 px-4 py-3 dark:border-violet-800/60 dark:bg-violet-950/30">
@@ -51,12 +83,16 @@ export default function ShopOverlay({ open, onClose, userStatus, setUserStatus }
     <div className="fixed inset-0 z-40" role="dialog" aria-modal="true" aria-labelledby="shop-overlay-title">
       <button
         type="button"
-        className="absolute inset-0 bg-black/45"
+        className={`absolute inset-0 z-40 bg-black/45 ${transition} ${
+          animating ? 'opacity-100' : 'opacity-0'
+        }`}
         aria-label="상점 닫기"
         onClick={onClose}
       />
       <aside
-        className="absolute inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-violet-200/80 bg-slate-50 shadow-2xl dark:border-violet-800/60 dark:bg-slate-950"
+        className={`absolute inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-violet-200/80 bg-slate-50 shadow-2xl will-change-transform dark:border-violet-800/60 dark:bg-slate-950 ${transition} ${
+          animating ? 'translate-x-0' : 'translate-x-full'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <span id="shop-overlay-title" className="sr-only">
