@@ -1,16 +1,16 @@
 /** @typedef {'running' | 'bodyweight' | 'stretch'} WorkoutType */
 /** @typedef {'easy' | 'medium' | 'hard'} Difficulty */
 
-const PRIMARY_STAT = {
-  running: 'agility',
-  bodyweight: 'strength',
-  stretch: 'flexibility',
+const WORKOUT_STATS = {
+  running: ['agility', 'vitality'],
+  bodyweight: ['strength', 'vitality'],
+  stretch: ['flexibility', 'agility'],
 }
 
-const DIFF_BONUS = {
-  easy: { primary: 1, vitality: 0 },
-  medium: { primary: 2, vitality: 1 },
-  hard: { primary: 3, vitality: 2 },
+const DIFFICULTY_STAT_BONUS = {
+  easy: 1,
+  medium: 2,
+  hard: 3,
 }
 
 const COIN_REWARD = {
@@ -25,28 +25,29 @@ const COIN_REWARD = {
  * @param {Difficulty} difficulty
  */
 export function applyWorkout(userStatus, workoutType, difficulty) {
-  const statKey = PRIMARY_STAT[workoutType]
-  const bonus = DIFF_BONUS[difficulty]
-  if (!statKey || !bonus) return userStatus
+  const statKeys = WORKOUT_STATS[workoutType]
+  const bonus = DIFFICULTY_STAT_BONUS[difficulty]
+  if (!statKeys || !bonus) return userStatus
 
   const today = new Date().toISOString().slice(0, 10)
   const coins = userStatus.coins + (COIN_REWARD[difficulty] ?? 0)
+  const nextStats = { ...userStatus.stats }
+
+  for (const key of statKeys) {
+    nextStats[key] = (nextStats[key] ?? 0) + bonus
+  }
 
   return {
     ...userStatus,
     coins,
-    stats: {
-      ...userStatus.stats,
-      [statKey]: userStatus.stats[statKey] + bonus.primary,
-      vitality: userStatus.stats.vitality + bonus.vitality,
-    },
+    stats: nextStats,
     lastWorkoutDate: today,
   }
 }
 
 export const WORKOUT_LABELS = {
   running: '러닝',
-  bodyweight: '맨몸',
+  bodyweight: '맨몸 운동',
   stretch: '스트레칭',
 }
 
