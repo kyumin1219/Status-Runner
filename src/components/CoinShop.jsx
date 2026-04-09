@@ -57,7 +57,7 @@ export default function CoinShop({ userStatus, setUserStatus, embedded = false }
         <article className="rounded-2xl border border-violet-200/80 bg-white/90 p-4 shadow-sm dark:border-violet-800/60 dark:bg-slate-900/80">
           <h3 className="text-sm font-bold text-violet-800 dark:text-violet-300">캐릭터 가챠</h3>
           <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-            새 픽셀 시드를 뽑아 바로 착용해요. ({GACHA_COST} 코인)
+            새 픽셀 시드를 뽑아 바로 착용해요. (보유: {userStatus.coins} 코인)
           </p>
           <button
             type="button"
