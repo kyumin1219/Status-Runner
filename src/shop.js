@@ -67,6 +67,51 @@ export function getTitleLabel(titleId) {
 }
 
 /**
+ * 칭호별 시각 테마 클래스.
+ * @param {string | null | undefined} titleId
+ */
+export function getTitleTheme(titleId) {
+  switch (titleId) {
+    case 'title-casual':
+      return {
+        chipClass:
+          'title-chip-animated border-emerald-300/80 bg-emerald-50 text-emerald-800 dark:border-emerald-700/80 dark:bg-emerald-950/45 dark:text-emerald-200',
+        listNameClass: 'text-emerald-700 dark:text-emerald-300',
+      }
+    case 'title-quit-god':
+      return {
+        chipClass:
+          'title-chip-animated border-fuchsia-300/80 bg-fuchsia-50 text-fuchsia-800 dark:border-fuchsia-700/80 dark:bg-fuchsia-950/45 dark:text-fuchsia-200',
+        listNameClass: 'text-fuchsia-700 dark:text-fuchsia-300',
+      }
+    case 'title-legs':
+      return {
+        chipClass:
+          'title-chip-animated border-rose-300/80 bg-rose-50 text-rose-800 dark:border-rose-700/80 dark:bg-rose-950/45 dark:text-rose-200',
+        listNameClass: 'text-rose-700 dark:text-rose-300',
+      }
+    case 'title-morning':
+      return {
+        chipClass:
+          'title-chip-animated border-sky-300/80 bg-sky-50 text-sky-800 dark:border-sky-700/80 dark:bg-sky-950/45 dark:text-sky-200',
+        listNameClass: 'text-sky-700 dark:text-sky-300',
+      }
+    case 'title-stretch-king':
+      return {
+        chipClass:
+          'title-chip-animated border-amber-300/80 bg-amber-50 text-amber-800 dark:border-amber-700/80 dark:bg-amber-950/45 dark:text-amber-200',
+        listNameClass: 'text-amber-700 dark:text-amber-300',
+      }
+    default:
+      return {
+        chipClass:
+          'title-chip-animated border-violet-300/80 bg-violet-50 text-violet-800 dark:border-violet-700/80 dark:bg-violet-950/45 dark:text-violet-200',
+        listNameClass: 'text-violet-700 dark:text-violet-300',
+      }
+  }
+}
+
+/**
  * @param {object} userStatus
  */
 export function tryPullGacha(userStatus) {

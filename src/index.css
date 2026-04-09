@@ -7,3 +7,25 @@ body {
   min-height: 100svh;
   -webkit-font-smoothing: antialiased;
 }
+
+@keyframes title-walk-wave {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-1px) translateY(-1px) rotate(-1deg);
+  }
+  50% {
+    transform: translateX(1px) translateY(0) rotate(1deg);
+  }
+  75% {
+    transform: translateX(-1px) translateY(1px) rotate(-1deg);
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+}
+
+.title-chip-animated:hover {
+  animation: title-walk-wave 0.9s ease-in-out infinite;
+}

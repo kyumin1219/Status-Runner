@@ -1,15 +1,19 @@
+import { getTitleTheme } from '../shop'
+
 function dicebearPixelArtUrl(seed) {
   return `https://api.dicebear.com/9.x/pixel-art/svg?seed=${encodeURIComponent(seed)}`
 }
 
-export default function CharacterDashboard({ seed, titleLabel, decayShieldDetail = null }) {
+export default function CharacterDashboard({ seed, titleId = null, titleLabel, decayShieldDetail = null }) {
+  const titleTheme = getTitleTheme(titleId)
+
   return (
     <div className="flex flex-col items-center gap-2 py-4">
       <p className="text-sm font-medium text-slate-500 dark:text-slate-400">나의 캐릭터</p>
       <div className="rounded-2xl bg-gradient-to-b from-violet-100/80 to-slate-50 p-6 shadow-inner ring-1 ring-violet-200/60 dark:from-violet-950/40 dark:to-slate-900 dark:ring-violet-800/50">
         {titleLabel ? (
           <p
-            className="mb-2 max-w-[14rem] text-center text-[11px] font-bold leading-tight text-violet-700 dark:text-violet-300 sm:text-xs"
+            className={`mb-2 max-w-[14rem] rounded-full border px-3 py-1.5 text-center text-[11px] font-bold leading-tight transition-transform duration-200 hover:-translate-y-0.5 sm:text-xs ${titleTheme.chipClass}`}
             title={titleLabel}
           >
             「{titleLabel}」

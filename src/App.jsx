@@ -124,6 +124,7 @@ export default function App() {
       <main className="mx-auto w-full max-w-lg">
         <CharacterDashboard
           seed={userStatus.currentBody}
+          titleId={userStatus.equippedTitleId}
           titleLabel={titleLabel}
           decayShieldDetail={decayShieldDetail}
         />

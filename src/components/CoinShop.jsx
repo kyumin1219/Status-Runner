@@ -4,6 +4,7 @@ import {
   SHIELD_COST,
   TITLE_CATALOG,
   getDecayShieldDisplay,
+  getTitleTheme,
   isDecayShieldActive,
   tryBuyDecayShield,
   tryBuyTitle,
@@ -99,13 +100,14 @@ export default function CoinShop({ userStatus, setUserStatus, embedded = false }
             {TITLE_CATALOG.map((t) => {
               const owned = userStatus.ownedTitleIds.includes(t.id)
               const equipped = userStatus.equippedTitleId === t.id
+              const theme = getTitleTheme(t.id)
               return (
                 <li
                   key={t.id}
                   className="flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2 dark:border-slate-700 dark:bg-slate-800/50 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="text-left">
-                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <p className={`text-sm font-semibold ${theme.listNameClass}`}>
                       {t.label}
                     </p>
                     <p className="text-[11px] text-slate-500">{t.price} 코인</p>
