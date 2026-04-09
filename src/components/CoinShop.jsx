@@ -10,7 +10,7 @@ import {
   tryPullGacha,
 } from '../shop'
 
-export default function CoinShop({ userStatus, setUserStatus }) {
+export default function CoinShop({ userStatus, setUserStatus, embedded = false }) {
   const [msg, setMsg] = useState('')
 
   useEffect(() => {
@@ -32,13 +32,17 @@ export default function CoinShop({ userStatus, setUserStatus }) {
   const shieldOn = isDecayShieldActive(userStatus)
 
   return (
-    <section className="border-t border-violet-200/50 px-4 py-6 dark:border-violet-900/40">
-      <h2 className="mb-1 text-center text-sm font-semibold text-slate-700 dark:text-slate-200">
-        심심풀이 상점
-      </h2>
-      <p className="mb-4 text-center text-[11px] leading-snug text-slate-500 dark:text-slate-400">
-        운동으로 모은 코인으로 작은 보상을 사 보세요.
-      </p>
+    <section className={`px-4 pb-6 ${embedded ? 'pt-3' : 'pt-4'}`}>
+      {!embedded ? (
+        <>
+          <h2 className="mb-1 text-center text-sm font-semibold text-slate-700 dark:text-slate-200">
+            심심풀이 상점
+          </h2>
+          <p className="mb-4 text-center text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+            운동으로 모은 코인으로 작은 보상을 사 보세요.
+          </p>
+        </>
+      ) : null}
 
       {msg ? (
         <p
