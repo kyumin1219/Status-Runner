@@ -1,7 +1,6 @@
 export const STORAGE_KEY = 'status-runner:userStatus'
 
 export function defaultUserStatus() {
-  const today = new Date().toISOString().slice(0, 10)
   const seed = 'status-runner'
   return {
     currentBody: seed,
@@ -11,9 +10,11 @@ export function defaultUserStatus() {
       agility: 8,
       vitality: 8,
       flexibility: 8,
+      diligence: 8,
     },
     inventory: [seed],
-    lastWorkoutDate: today,
+    lastWorkoutDate: null,
+    workoutStreak: 0,
     ownedTitleIds: [],
     equippedTitleId: null,
     decayShieldDay: null,
@@ -21,6 +22,12 @@ export function defaultUserStatus() {
 }
 
 function clampStat(n, fallback) {
+  const x = Number(n)
+  if (!Number.isFinite(x)) return fallback
+  return Math.max(0, Math.min(999, Math.round(x)))
+}
+
+function clampStreak(n, fallback) {
   const x = Number(n)
   if (!Number.isFinite(x)) return fallback
   return Math.max(0, Math.min(999, Math.round(x)))
@@ -49,6 +56,11 @@ export function normalizeUserStatus(raw) {
       ? raw.decayShieldDay
       : null
 
+  const lastWorkoutDate =
+    typeof raw.lastWorkoutDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.lastWorkoutDate)
+      ? raw.lastWorkoutDate
+      : null
+
   return {
     currentBody:
       typeof raw.currentBody === 'string' && raw.currentBody.length > 0
@@ -60,12 +72,13 @@ export function normalizeUserStatus(raw) {
       agility: clampStat(stats.agility, d.stats.agility),
       vitality: clampStat(stats.vitality, d.stats.vitality),
       flexibility: clampStat(stats.flexibility, d.stats.flexibility),
+      diligence: clampStat(stats.diligence, d.stats.diligence),
     },
     inventory: Array.isArray(raw.inventory)
       ? raw.inventory.filter((s) => typeof s === 'string' && s.length > 0)
       : d.inventory,
-    lastWorkoutDate:
-      typeof raw.lastWorkoutDate === 'string' ? raw.lastWorkoutDate : d.lastWorkoutDate,
+    lastWorkoutDate,
+    workoutStreak: clampStreak(raw.workoutStreak, d.workoutStreak),
     ownedTitleIds,
     equippedTitleId,
     decayShieldDay,

@@ -12,21 +12,26 @@ import { Radar } from 'react-chartjs-2'
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
+/** 레이더 축 순서: 힘 → 지구력 → 유연성 → 성실 → 민첩 */
+const STAT_AXIS = [
+  { key: 'strength', label: '힘' },
+  { key: 'vitality', label: '지구력' },
+  { key: 'flexibility', label: '유연성' },
+  { key: 'diligence', label: '성실' },
+  { key: 'agility', label: '민첩' },
+]
+
 export default function StatsGraph({ stats }) {
   const { data, maxScale } = useMemo(() => {
-    const values = [
-      stats.strength,
-      stats.agility,
-      stats.vitality,
-      stats.flexibility,
-    ]
+    const values = STAT_AXIS.map(({ key }) => stats[key] ?? 0)
     const peak = Math.max(...values, 10)
     const maxScale = Math.ceil(peak * 1.15)
+    const labels = STAT_AXIS.map((a) => a.label)
 
     return {
       maxScale,
       data: {
-        labels: ['STR', 'DEX', 'VIT', 'FLEX'],
+        labels,
         datasets: [
           {
             label: '스탯',
@@ -52,12 +57,7 @@ export default function StatsGraph({ stats }) {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (ctx) => {
-              const labels = ['근력', '민첩', '지구력', '유연성']
-              const i = ctx.dataIndex
-              const name = labels[i] ?? ctx.label
-              return `${name}: ${ctx.formattedValue}`
-            },
+            label: (ctx) => `${ctx.label}: ${ctx.formattedValue}`,
           },
         },
       },
@@ -73,7 +73,7 @@ export default function StatsGraph({ stats }) {
           grid: { color: 'rgba(148, 163, 184, 0.35)' },
           pointLabels: {
             color: '#64748b',
-            font: { size: 12, weight: '600' },
+            font: { size: 11, weight: '600' },
           },
         },
       },
@@ -86,14 +86,15 @@ export default function StatsGraph({ stats }) {
       <h2 className="mb-2 text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
         스탯 레이더
       </h2>
-      <div className="mx-auto h-72 w-full max-w-md">
+      <div className="mx-auto h-80 w-full max-w-md">
         <Radar data={data} options={options} />
       </div>
-      <ul className="mx-auto mt-2 grid max-w-md grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400 sm:grid-cols-4 sm:text-center">
-        <li>STR {stats.strength}</li>
-        <li>DEX {stats.agility}</li>
-        <li>VIT {stats.vitality}</li>
-        <li>FLEX {stats.flexibility}</li>
+      <ul className="mx-auto mt-2 grid max-w-md grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400 sm:grid-cols-3 sm:text-center lg:grid-cols-5">
+        {STAT_AXIS.map(({ key, label }) => (
+          <li key={key}>
+            {label} {stats[key] ?? 0}
+          </li>
+        ))}
       </ul>
     </section>
   )

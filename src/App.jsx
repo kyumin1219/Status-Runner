@@ -53,8 +53,13 @@ export default function App() {
               몸의 스탯을 캐릭터와 함께 키워 보세요
             </p>
             <p className="text-[11px] text-slate-400 dark:text-slate-500">
-              마지막 기록: {userStatus.lastWorkoutDate}
+              마지막 기록: {userStatus.lastWorkoutDate ?? '—'}
             </p>
+            {userStatus.workoutStreak > 0 ? (
+              <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                연속 기록: {userStatus.workoutStreak}일
+              </p>
+            ) : null}
             <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">
               코인 {userStatus.coins}
             </p>
