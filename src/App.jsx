@@ -3,7 +3,7 @@ import CharacterDashboard from './components/CharacterDashboard'
 import ShopOverlay from './components/ShopOverlay'
 import StatsGraph from './components/StatsGraph'
 import WorkoutButtons from './components/WorkoutButtons'
-import { getTitleLabel } from './shop'
+import { getDecayShieldDisplay, getTitleLabel, isDecayShieldActive } from './shop'
 import { applyWorkout } from './workout'
 import { STORAGE_KEY, defaultUserStatus, normalizeUserStatus } from './userStatus'
 
@@ -38,6 +38,9 @@ export default function App() {
       ? getTitleLabel(userStatus.equippedTitleId)
       : null
 
+  const decayShieldDetail =
+    isDecayShieldActive(userStatus) ? getDecayShieldDisplay(userStatus.decayShieldDay) : null
+
   return (
     <div className="min-h-svh bg-gradient-to-b from-slate-50 to-violet-50/40 text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100">
       <header className="border-b border-violet-200/60 bg-white/70 px-4 py-4 backdrop-blur dark:border-violet-900/40 dark:bg-slate-900/70">
@@ -67,7 +70,11 @@ export default function App() {
       </header>
 
       <main className="mx-auto w-full max-w-lg">
-        <CharacterDashboard seed={userStatus.currentBody} titleLabel={titleLabel} />
+        <CharacterDashboard
+          seed={userStatus.currentBody}
+          titleLabel={titleLabel}
+          decayShieldDetail={decayShieldDetail}
+        />
         <StatsGraph stats={userStatus.stats} />
         <WorkoutButtons onComplete={onWorkoutComplete} />
       </main>

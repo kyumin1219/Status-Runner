@@ -1,4 +1,4 @@
-import { localDateString } from './dateUtils'
+import { formatKoreanYmdLong, localDateString, localMidnightAfterYmd } from './dateUtils'
 
 export const GACHA_COST = 80
 export const SHIELD_COST = 35
@@ -34,6 +34,28 @@ export function isDecayShieldActive(userStatus) {
   const day = userStatus.decayShieldDay
   if (typeof day !== 'string' || day.length < 8) return false
   return day === localDateString()
+}
+
+/**
+ * 구매·적용일(로컬 달력)과 효과 종료 시각(그다음 날 0시).
+ * @param {string | null | undefined} decayShieldDay
+ * @returns {{ purchaseDateFormatted: string, expiresAtFormatted: string } | null}
+ */
+export function getDecayShieldDisplay(decayShieldDay) {
+  if (typeof decayShieldDay !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(decayShieldDay)) {
+    return null
+  }
+  const expires = localMidnightAfterYmd(decayShieldDay)
+  if (!expires || Number.isNaN(expires.getTime())) return null
+  return {
+    purchaseDateFormatted: formatKoreanYmdLong(decayShieldDay),
+    expiresAtFormatted: expires.toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour12: false,
+    }),
+  }
 }
 
 /**

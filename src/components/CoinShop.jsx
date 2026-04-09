@@ -3,6 +3,7 @@ import {
   GACHA_COST,
   SHIELD_COST,
   TITLE_CATALOG,
+  getDecayShieldDisplay,
   isDecayShieldActive,
   tryBuyDecayShield,
   tryBuyTitle,
@@ -30,6 +31,7 @@ export default function CoinShop({ userStatus, setUserStatus, embedded = false }
   }
 
   const shieldOn = isDecayShieldActive(userStatus)
+  const shieldDetail = shieldOn ? getDecayShieldDisplay(userStatus.decayShieldDay) : null
 
   return (
     <section className={`px-4 pb-6 ${embedded ? 'pt-3' : 'pt-4'}`}>
@@ -152,14 +154,17 @@ export default function CoinShop({ userStatus, setUserStatus, embedded = false }
           <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
             오늘(로컬 기준) 하루 동안만 스탯 감소(Decay)를 막아 줘요. 나중에 Decay를 넣으면 그때 적용돼요.
           </p>
-          <p className="mt-2 text-xs font-medium text-slate-700 dark:text-slate-200">
-            상태:{' '}
-            {shieldOn ? (
-              <span className="text-emerald-600 dark:text-emerald-400">오늘 보호 중</span>
+          <div className="mt-2 text-xs text-slate-700 dark:text-slate-200">
+            <p className="font-medium">상태</p>
+            {shieldDetail ? (
+              <ul className="mt-1 list-inside list-disc space-y-0.5 text-[11px] font-normal leading-snug text-slate-600 dark:text-slate-300">
+                <li>구매·적용일: {shieldDetail.purchaseDateFormatted}</li>
+                <li>효과 종료 예정: {shieldDetail.expiresAtFormatted}</li>
+              </ul>
             ) : (
-              <span className="text-slate-500">미적용</span>
+              <p className="mt-0.5 text-[11px] text-slate-500">미적용</p>
             )}
-          </p>
+          </div>
           <button
             type="button"
             disabled={shieldOn || userStatus.coins < SHIELD_COST}
