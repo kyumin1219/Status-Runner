@@ -18,6 +18,9 @@ export function defaultUserStatus() {
     ownedTitleIds: [],
     equippedTitleId: null,
     decayShieldDay: null,
+    activeQuest: null,
+    questChoices: null,
+    pendingFailureMessage: null,
   }
 }
 
@@ -61,6 +64,52 @@ export function normalizeUserStatus(raw) {
       ? raw.lastWorkoutDate
       : null
 
+  let activeQuest = null
+  if (raw.activeQuest && typeof raw.activeQuest === 'object') {
+    const aq = raw.activeQuest
+    const wt = aq.workoutType
+    const diff = aq.difficulty
+    const deadline = aq.deadline
+    const day = aq.day
+    if (
+      (wt === 'running' || wt === 'bodyweight' || wt === 'stretch') &&
+      (diff === 'easy' || diff === 'medium' || diff === 'hard') &&
+      Number.isFinite(deadline) &&
+      typeof day === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(day)
+    ) {
+      activeQuest = {
+        workoutType: wt,
+        difficulty: diff,
+        deadline,
+        day,
+      }
+    }
+  }
+
+  let questChoices = null
+  if (raw.questChoices && typeof raw.questChoices === 'object') {
+    const qc = raw.questChoices
+    const diff = qc.difficulty
+    const day = qc.day
+    const options = Array.isArray(qc.options)
+      ? qc.options.filter((x) => x === 'running' || x === 'bodyweight' || x === 'stretch')
+      : []
+    if (
+      (diff === 'easy' || diff === 'medium' || diff === 'hard') &&
+      typeof day === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(day) &&
+      options.length > 0
+    ) {
+      questChoices = { difficulty: diff, day, options: options.slice(0, 3) }
+    }
+  }
+
+  const pendingFailureMessage =
+    typeof raw.pendingFailureMessage === 'string' && raw.pendingFailureMessage.length > 0
+      ? raw.pendingFailureMessage
+      : null
+
   return {
     currentBody:
       typeof raw.currentBody === 'string' && raw.currentBody.length > 0
@@ -82,5 +131,8 @@ export function normalizeUserStatus(raw) {
     ownedTitleIds,
     equippedTitleId,
     decayShieldDay,
+    activeQuest,
+    questChoices,
+    pendingFailureMessage,
   }
 }

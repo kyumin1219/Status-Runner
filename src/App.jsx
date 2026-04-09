@@ -4,16 +4,21 @@ import ShopOverlay from './components/ShopOverlay'
 import StatsGraph from './components/StatsGraph'
 import WorkoutButtons from './components/WorkoutButtons'
 import { getDecayShieldDisplay, getTitleLabel, isDecayShieldActive } from './shop'
-import { applyWorkout } from './workout'
+import {
+  acceptQuestChoice,
+  completeActiveQuest,
+  prepareQuestChoices,
+  resolveExpiredQuest,
+} from './workout'
 import { STORAGE_KEY, defaultUserStatus, normalizeUserStatus } from './userStatus'
 
 function readStoredUserStatus() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return defaultUserStatus()
-    return normalizeUserStatus(JSON.parse(raw))
+    if (!raw) return resolveExpiredQuest(defaultUserStatus())
+    return resolveExpiredQuest(normalizeUserStatus(JSON.parse(raw)))
   } catch {
-    return defaultUserStatus()
+    return resolveExpiredQuest(defaultUserStatus())
   }
 }
 
@@ -29,8 +34,30 @@ export default function App() {
     }
   }, [userStatus])
 
-  const onWorkoutComplete = useCallback((workoutType, difficulty) => {
-    setUserStatus((prev) => applyWorkout(prev, workoutType, difficulty))
+  useEffect(() => {
+    const t = setInterval(() => {
+      setUserStatus((prev) => resolveExpiredQuest(prev))
+    }, 1000)
+    return () => clearInterval(t)
+  }, [])
+
+  const dismissFailureMessage = useCallback(() => {
+    setUserStatus((prev) => ({ ...prev, pendingFailureMessage: null }))
+  }, [])
+
+  const onPrepareQuest = useCallback((difficulty) => {
+    setUserStatus((prev) => {
+      const cleared = resolveExpiredQuest(prev)
+      return prepareQuestChoices(cleared, difficulty)
+    })
+  }, [])
+
+  const onSelectQuest = useCallback((workoutType) => {
+    setUserStatus((prev) => acceptQuestChoice(resolveExpiredQuest(prev), workoutType))
+  }, [])
+
+  const onCompleteQuest = useCallback(() => {
+    setUserStatus((prev) => completeActiveQuest(resolveExpiredQuest(prev)))
   }, [])
 
   const titleLabel =
@@ -41,8 +68,28 @@ export default function App() {
   const decayShieldDetail =
     isDecayShieldActive(userStatus) ? getDecayShieldDisplay(userStatus.decayShieldDay) : null
 
+  const failureMsg = userStatus.pendingFailureMessage
+
   return (
     <div className="min-h-svh bg-gradient-to-b from-slate-50 to-violet-50/40 text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100">
+      {failureMsg ? (
+        <div
+          role="alert"
+          className="border-b border-rose-200 bg-rose-50 px-4 py-3 text-center dark:border-rose-900/50 dark:bg-rose-950/50"
+        >
+          <p className="mx-auto max-w-lg text-sm font-medium text-rose-900 dark:text-rose-100">
+            {failureMsg}
+          </p>
+          <button
+            type="button"
+            onClick={dismissFailureMessage}
+            className="mt-2 rounded-lg bg-rose-700 px-4 py-1.5 text-xs font-semibold text-white hover:bg-rose-600"
+          >
+            확인
+          </button>
+        </div>
+      ) : null}
+
       <header className="border-b border-violet-200/60 bg-white/70 px-4 py-4 backdrop-blur dark:border-violet-900/40 dark:bg-slate-900/70">
         <div className="mx-auto flex max-w-lg flex-col items-center gap-3">
           <div className="flex flex-col items-center gap-1">
@@ -81,7 +128,12 @@ export default function App() {
           decayShieldDetail={decayShieldDetail}
         />
         <StatsGraph stats={userStatus.stats} />
-        <WorkoutButtons onComplete={onWorkoutComplete} />
+        <WorkoutButtons
+          userStatus={userStatus}
+          onPrepareQuest={onPrepareQuest}
+          onSelectQuest={onSelectQuest}
+          onCompleteQuest={onCompleteQuest}
+        />
       </main>
 
       <ShopOverlay
